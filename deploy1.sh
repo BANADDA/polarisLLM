@@ -153,17 +153,22 @@ install_dependencies() {
   fi
 
   ohai "Installing PyTorch and vision libraries..."
-  pip install torch torchvision --quiet
+  echo "This may take several minutes depending on your internet connection..."
+  pip install torch torchvision --progress-bar on --verbose
 
   ohai "Installing computer vision libraries..."
-  pip install timm --quiet
+  echo "Installing timm for vision transformers..."
+  pip install timm --progress-bar on --verbose
 
   ohai "Installing transformer libraries..."
-  pip install transformers==4.36.2 --quiet
-  pip install peft==0.15.0 --quiet
+  echo "Installing transformers (this is a large package)..."
+  pip install transformers==4.36.2 --progress-bar on --verbose
+  echo "Installing PEFT for parameter-efficient fine-tuning..."
+  pip install peft==0.15.0 --progress-bar on --verbose
 
   ohai "Installing deployment framework..."
-  pip install ms-swift --quiet
+  echo "Installing ms-swift for model deployment..."
+  pip install ms-swift --progress-bar on --verbose
 
   # Verify key installations
   if ! command -v swift &> /dev/null; then
@@ -229,9 +234,15 @@ deploy_model() {
 
   ohai "Deploying $MODEL_NAME on GPU(s): $CUDA_VISIBLE_DEVICES"
   ohai "Model: $MODEL_ID"
-  ohai "Port: $DEPLOYMENT_PORT"
+  ohai "Port: $DEPLOYMENT_PORT"  
   ohai "Host: $DEPLOYMENT_HOST"
   ohai "Log file: $LOG_FILE"
+
+  echo ""
+  echo "${tty_yellow}📥 Starting model deployment...${tty_reset}"
+  echo "   This will download the model (~13GB) and may take 10-30 minutes"
+  echo "   depending on your internet connection and hardware."
+  echo ""
 
   # Start deployment in background
   CUDA_VISIBLE_DEVICES="$CUDA_VISIBLE_DEVICES" \
@@ -246,6 +257,14 @@ deploy_model() {
   echo "$DEPLOY_PID" > "$MODEL_DIR/deploy.pid"
 
   success "Model deployment started with PID: $DEPLOY_PID"
+  
+  echo ""
+  echo "${tty_blue}📊 Monitoring deployment progress...${tty_reset}"
+  echo "   Press Ctrl+C to stop monitoring (deployment will continue in background)"
+  echo ""
+  
+  # Monitor deployment logs for the first 30 seconds
+  monitor_deployment_start
   echo "🌕 Step 4: COMPLETE"
 }
 
@@ -276,10 +295,11 @@ show_deployment_info() {
   echo "  Log file: $LOG_FILE"
   echo ""
   echo "${tty_bold}Useful Commands:${tty_reset}"
-  echo "  Monitor deployment: ${tty_blue}tail -f $LOG_FILE${tty_reset}"
+  echo "  Monitor deployment: ${tty_blue}$0 logs${tty_reset}"
+  echo "  Manual log monitoring: ${tty_blue}tail -f $LOG_FILE${tty_reset}"
   echo "  Test deployment: ${tty_blue}python $DEPLOYMENT_DIR/test_specific_image.py${tty_reset}"
   echo "  Check process: ${tty_blue}ps -p $deploy_pid${tty_reset}"
-  echo "  Stop deployment: ${tty_blue}kill $deploy_pid${tty_reset}"
+  echo "  Stop deployment: ${tty_blue}$0 stop${tty_reset}"
   echo ""
   echo "${tty_bold}API Endpoint:${tty_reset}"
   echo "  http://$DEPLOYMENT_HOST:$DEPLOYMENT_PORT"
@@ -287,6 +307,58 @@ show_deployment_info() {
   warn "The model will continue running in the background even after closing this terminal."
   
   echo "🌕 Step 5: COMPLETE"
+}
+
+##############################
+# Monitoring Functions
+##############################
+
+monitor_deployment_start() {
+  local timeout=30
+  local elapsed=0
+  
+  echo "Waiting for deployment to start..."
+  
+  # Wait for log file to be created
+  while [ ! -f "$LOG_FILE" ] && [ $elapsed -lt 10 ]; do
+    sleep 1
+    elapsed=$((elapsed + 1))
+    echo -n "."
+  done
+  
+  if [ ! -f "$LOG_FILE" ]; then
+    warn "Log file not created yet. Deployment may take a moment to start."
+    return 1
+  fi
+  
+  echo ""
+  success "Log file created. Showing deployment progress..."
+  echo ""
+  
+  # Monitor log file for initial startup
+  timeout 30s tail -f "$LOG_FILE" 2>/dev/null || {
+    echo ""
+    echo "${tty_yellow}⏰ Initial monitoring timeout reached.${tty_reset}"
+    echo "   Deployment continues in background."
+    echo ""
+  }
+}
+
+monitor_deployment_logs() {
+  title "Live Deployment Logs"
+  
+  if [ ! -f "$LOG_FILE" ]; then
+    error "Log file not found: $LOG_FILE"
+    echo "Run deployment first with: ./install.sh"
+    return 1
+  fi
+  
+  echo "Monitoring deployment logs in real-time..."
+  echo "Press Ctrl+C to stop monitoring (deployment will continue)"
+  echo ""
+  echo "${tty_blue}======== DEPLOYMENT LOGS ========${tty_reset}"
+  
+  tail -f "$LOG_FILE"
 }
 
 ##############################
@@ -393,6 +465,7 @@ print_help() {
   echo "  show_info             - Show deployment information"
   echo "  status                - Check deployment status"
   echo "  stop                  - Stop deployment"
+  echo "  logs                  - Monitor deployment logs in real-time"
   echo "  doctor                - System diagnostics"
   echo "  help                  - Show this help message"
   echo ""
@@ -403,6 +476,7 @@ print_help() {
   echo "  $0                           # Full deployment"
   echo "  CUDA_VISIBLE_DEVICES=1 $0   # Use GPU 1"
   echo "  $0 status                    # Check status"
+  echo "  $0 logs                      # Monitor deployment logs"
   echo "  $0 stop                      # Stop deployment"
 }
 
@@ -442,6 +516,9 @@ else
         ;;
       stop)
         stop_deployment
+        ;;
+      logs)
+        monitor_deployment_logs
         ;;
       doctor)
         doctor
