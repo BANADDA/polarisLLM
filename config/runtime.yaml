@@ -1,0 +1,13 @@
+host: "0.0.0.0"
+port_range_start: 8000
+port_range_end: 8100
+models_dir: "models"
+logs_dir: "logs"
+config_dir: "config"
+max_concurrent_models: 5
+model_timeout: 300
+health_check_interval: 30
+swift_path: "swift"
+env_vars:
+  CUDA_VISIBLE_DEVICES: "0"
+  HF_HUB_CACHE: "./cache/huggingface"

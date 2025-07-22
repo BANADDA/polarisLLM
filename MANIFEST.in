@@ -1,0 +1,9 @@
+include README.md
+include requirements.txt
+include LICENSE
+recursive-include config *.yaml
+recursive-include src *.py
+include main.py
+include cli.py
+include Dockerfile
+include docker-compose.yml
