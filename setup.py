@@ -9,12 +9,12 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
 setup(
     name="polarisllm",
     version="1.0.0",
-    author="Your Name",
-    author_email="your.email@example.com",
-    description="High-performance multi-model LLM runtime engine",
+    author="PolarisLLM Team",
+    author_email="contact@polarisllm.dev",
+    description="🌟 The Ultimate Multi-Model LLM Runtime Platform - Deploy, manage, and serve 300+ language models with OpenAI-compatible APIs. Built on ms-swift for production-ready performance.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/polarisLLM",
+    url="https://github.com/polarisllm/polarisLLM",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 4 - Beta",
