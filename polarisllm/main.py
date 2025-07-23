@@ -36,18 +36,23 @@ def sync_main():
     
     # Check if ms-swift is installed
     try:
+        import swift
+        print("✅ ms-swift found")
+    except ImportError:
+        print("❌ ms-swift not found. Please install it first:")
+        print("   pip install ms-swift --upgrade")
+        return
+    
+    # Check if swift command is available
+    try:
         import subprocess
         result = subprocess.run(["swift", "--version"], capture_output=True, text=True)
         if result.returncode != 0:
-            print("❌ ms-swift not found. Please install it first:")
-            print("   pip install ms-swift[llm] --upgrade")
-            return
+            print("⚠️  swift command not found in PATH")
+            print("💡 You may need to add swift to your PATH or use python -m swift instead")
     except FileNotFoundError:
-        print("❌ ms-swift not found. Please install it first:")
-        print("   pip install ms-swift[llm] --upgrade")
-        return
-    
-    print("✅ ms-swift found")
+        print("⚠️  swift command not found in PATH")
+        print("💡 You may need to add swift to your PATH or use python -m swift instead")
     print("🔧 Setting up runtime environment...")
     
     # Parse arguments

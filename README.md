@@ -103,8 +103,9 @@ curl http://localhost:7860/v1/models
 
 ### **Step 3: Load and Use Models** 🤖
 ```bash
-# First, load a model using ms-swift
+# First, load a model using ms-swift (use python -m swift if swift command not in PATH)
 swift deploy --model_type qwen2_5 --model_id Qwen/Qwen2.5-7B-Instruct
+# OR: python -m swift deploy --model_type qwen2_5 --model_id Qwen/Qwen2.5-7B-Instruct
 
 # Then use with OpenAI-compatible API
 curl -X POST "http://localhost:7860/v1/chat/completions" \
@@ -208,9 +209,11 @@ polarisllm --help
 ```bash
 # List available models
 swift list-models
+# OR: python -m swift list-models
 
 # Deploy a chat model
 swift deploy --model_type qwen2_5 --model_id Qwen/Qwen2.5-7B-Instruct
+# OR: python -m swift deploy --model_type qwen2_5 --model_id Qwen/Qwen2.5-7B-Instruct
 
 # Deploy a vision model  
 swift deploy --model_type deepseek_vl --model_id deepseek-ai/deepseek-vl-7b-chat
@@ -220,6 +223,7 @@ swift deploy --model_type deepseek --model_id deepseek-ai/deepseek-coder-6.7b-in
 
 # Check deployment status
 swift list
+# OR: python -m swift list
 ```
 
 ## 🤖 **Supported Models (300+)**
