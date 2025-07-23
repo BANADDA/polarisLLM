@@ -81,32 +81,37 @@ pip install ms-swift[llm] --upgrade
 
 ### **Step 1: Install & Start** ⚡
 ```bash
+# Install PolarisLLM (includes ms-swift dependency)
 pip install polarisllm
-polaris start
+
+# Start the runtime engine
+polarisllm
 ```
 *Server starts on `http://localhost:7860` with beautiful web interface*
 
-### **Step 2: Load Your First Model** 🤖
+### **Step 2: Verify Installation** ✅
 ```bash
-# Load a powerful 7B chat model
-polaris load qwen2.5-7b-instruct
+# Check if server is running
+curl http://localhost:7860/health
 
-# Or load a vision model for image understanding
-polaris load deepseek-vl-7b-chat
+# View available models
+curl http://localhost:7860/v1/models
 
-# Check status
-polaris status
+# Open API documentation
+# Visit: http://localhost:7860/docs
 ```
 
-### **Step 3: Start Chatting** 💬
+### **Step 3: Load and Use Models** 🤖
 ```bash
-# Using curl
+# First, load a model using ms-swift
+swift deploy --model_type qwen2_5 --model_id Qwen/Qwen2.5-7B-Instruct
+
+# Then use with OpenAI-compatible API
 curl -X POST "http://localhost:7860/v1/chat/completions" \
   -H "Content-Type: application/json" \
   -d '{
     "model": "qwen2.5-7b-instruct", 
-    "messages": [{"role": "user", "content": "Explain quantum computing"}],
-    "stream": true
+    "messages": [{"role": "user", "content": "Hello! How are you?"}]
   }'
 ```
 
@@ -181,28 +186,40 @@ async def process_documents():
                 print(f"{model}: {result}")
 ```
 
-## 🛠️ CLI Usage
+## 🛠️ **Available Commands**
 
-The CLI provides convenient model management:
-
+### **Server Commands**
 ```bash
-# Check runtime status
-python cli.py status
+# Start the runtime engine (main command)
+polarisllm
 
+# Alternative start commands
+polaris-llm
+polaris-server
+
+# Start with custom options
+polarisllm --host 0.0.0.0 --port 8080
+
+# View help
+polarisllm --help
+```
+
+### **Model Management (via ms-swift)**
+```bash
 # List available models
-python cli.py list
+swift list-models
 
-# List running models
-python cli.py list --running
+# Deploy a chat model
+swift deploy --model_type qwen2_5 --model_id Qwen/Qwen2.5-7B-Instruct
 
-# Load a model with custom arguments
-python cli.py load qwen2.5-7b-instruct --swift-args max_length=4096
+# Deploy a vision model  
+swift deploy --model_type deepseek_vl --model_id deepseek-ai/deepseek-vl-7b-chat
 
-# Unload a model
-python cli.py unload qwen2.5-7b-instruct
+# Deploy a code model
+swift deploy --model_type deepseek --model_id deepseek-ai/deepseek-coder-6.7b-instruct
 
-# Get model information
-python cli.py info deepseek-vl-7b-chat
+# Check deployment status
+swift list
 ```
 
 ## 🤖 **Supported Models (300+)**

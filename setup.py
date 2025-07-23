@@ -8,14 +8,14 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
 
 setup(
     name="polarisllm",
-    version="1.1.0",
+    version="1.3.0",
     author="PolarisLLM Team",
     author_email="elon@polariscloud.ai",
     description="🌟 The Ultimate Multi-Model LLM Runtime Platform - Deploy, manage, and serve 300+ language models with OpenAI-compatible APIs. Built on ms-swift for production-ready performance.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/polarisllm/polarisLLM",
-    packages=find_packages(),
+    packages=find_packages(include=["polarisllm", "polarisllm.*", "src", "src.*"]),
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
@@ -35,9 +35,10 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "polaris=src.cli:main",
-            "polarisllm=main:main",
-            "polaris-server=main:main",
+            "polarisllm=polarisllm.main:sync_main",
+            "polaris-llm=polarisllm.main:sync_main",
+            "polaris-server=polarisllm.main:sync_main",
+            "polaris-cli=polarisllm.cli:main",
         ],
     },
     include_package_data=True,
