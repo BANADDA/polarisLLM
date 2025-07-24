@@ -1,363 +1,229 @@
-# 🌟 PolarisLLM Runtime Engine
+# 🌟 PolarisLLM - AI Model Orchestration Platform
 
-**The Ultimate Multi-Model LLM Runtime Platform**
+**Deploy and manage 300+ AI models with simple commands**
 
-PolarisLLM is a production-ready, high-performance runtime engine that transforms how you deploy and serve Large Language Models. Built on the robust ms-swift framework, it provides seamless OpenAI-compatible APIs while enabling dynamic multi-model serving, making it the perfect solution for developers, researchers, and enterprises who need flexible, scalable LLM infrastructure.
+Transform your server into a powerful AI platform. Deploy models in the background, manage them with ease, and access everything through OpenAI-compatible APIs.
 
-## 🎯 **Why PolarisLLM?**
+[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://pypi.org/project/polarisllm/)
+[![Python](https://img.shields.io/badge/python-3.8+-brightgreen.svg)](https://python.org)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-**🚀 Turn Any Server Into an LLM Powerhouse**
-- Deploy multiple models simultaneously on a single machine
-- Switch between models without restarts or downtime
-- Support for 300+ models including Qwen, Llama, DeepSeek, Mistral, and more
+---
 
-**⚡ Production-Ready Performance**
-- Built on battle-tested ms-swift framework
-- Automatic resource management and optimization
-- Real-time health monitoring and auto-recovery
+## ✨ What You Get
 
-**🔌 Drop-in OpenAI Compatibility**
-- Use existing OpenAI client libraries without modification
-- Seamless integration with popular frameworks like LangChain, LlamaIndex
-- Perfect for migration from proprietary APIs to self-hosted solutions
+🚀 **Background Model Deployment** - Models run automatically in the background  
+🎛️ **Simple Management** - Start, stop, and monitor with easy commands  
+📊 **Real-time Monitoring** - See status, memory usage, and live logs  
+🔌 **OpenAI Compatible** - Works with existing OpenAI code  
+🌐 **300+ Models** - Qwen, Llama, DeepSeek, Mistral, and more  
 
-## ✨ **Key Features**
+---
 
-### 🎛️ **Dynamic Model Management**
-- **Hot-swap models** without server restarts
-- **Concurrent serving** of multiple models on different ports
-- **Intelligent resource allocation** and memory management
-- **Auto-scaling** based on demand
+## 🚀 Get Started
 
-### 🔗 **Universal Compatibility**
-- **OpenAI API compatible** - works with existing tools and libraries
-- **300+ supported models** from HuggingFace and ModelScope
-- **Multi-modal support** - text, vision, code, and audio models
-- **Streaming responses** for real-time applications
-
-### 🛠️ **Developer Experience**
-- **Rich CLI interface** with beautiful status displays
-- **RESTful admin APIs** for programmatic control
-- **YAML configuration** for easy model definitions
-- **Comprehensive logging** and error handling
-
-### 🏗️ **Production Ready**
-- **Docker containerization** with GPU support
-- **Health checks** and automatic recovery
-- **Resource monitoring** and performance metrics
-- **Horizontal scaling** support
-
-## 📦 **Installation**
-
-### 🎉 **Quick Install (Recommended)**
+### Install
 ```bash
-# Install from PyPI - that's it!
-pip install polarisllm
-
-# Start the engine
-polaris start
+pip install polarisllm --upgrade
 ```
 
-### 🐳 **Docker Installation**
+### Start Server
 ```bash
-# Run with Docker
-docker run -p 7860:7860 polarisllm/polarisllm
+polarisllm start --daemon
+```
+```
+🌟 PolarisLLM Runtime Engine
+==================================================
+🚀 Starting PolarisLLM server in daemon mode...
+   Host: 0.0.0.0
+   Port: 7860
+   Log File: /home/user/.polarisllm/logs/server.log
 
-# Or with docker-compose
-git clone https://github.com/polarisllm/polarisLLM.git
-cd polarisLLM
-docker-compose up -d
+✅ Server started successfully!
+   PID: 12345
+   URL: http://0.0.0.0:7860
+
+💡 Commands:
+   polarisllm status              # Check server status
+   polarisllm logs --server       # View server logs
+   polarisllm stop --server       # Stop server
 ```
 
-### 🛠️ **Development Installation**
+### Deploy Your First Model
 ```bash
-git clone https://github.com/polarisllm/polarisLLM.git
-cd polarisLLM
-pip install -e .
-pip install ms-swift[llm] --upgrade
+polarisllm deploy --model qwen2.5-7b-instruct
+```
+```
+🚀 Deploying model: qwen2.5-7b-instruct
+📋 Using convenience shortcut for qwen2.5-7b-instruct
+   Model Type: qwen2_5
+   Model ID: Qwen/Qwen2.5-7B-Instruct
+
+📡 Allocated port: 8000
+🔧 Command: swift deploy --model_type qwen2_5 --model Qwen/Qwen2.5-7B-Instruct --port 8000 --host 0.0.0.0
+📝 Logs: /home/user/.polarisllm/logs/qwen2.5-7b-instruct.log
+
+🚀 Starting deployment in background...
+✅ Started process 12346 for qwen2.5-7b-instruct
+✅ Model deployment started successfully!
+   Name: qwen2.5-7b-instruct
+   PID: 12346
+   Port: 8000
+   Status: Initializing...
+
+🔍 Monitor with: polarisllm logs qwen2.5-7b-instruct --follow
+📊 Check status: polarisllm status
+🌐 Access via: http://localhost:7860/v1/chat/completions
 ```
 
-## 🚀 **Quick Start Guide**
-
-### **Step 1: Install & Start** ⚡
+### Check What's Running
 ```bash
-# Install PolarisLLM (includes ms-swift dependency)
-pip install polarisllm
-
-# Start the runtime engine
-polarisllm
+polarisllm list
 ```
-*Server starts on `http://localhost:7860` with beautiful web interface*
+```
+📋 Deployed Models
+========================================================================
+NAME                    STATUS      PORT    MEMORY   UPTIME    TYPE
+qwen2.5-7b-instruct     🟢 Running  8000    15.2%    2.5h      qwen2_5
 
-### **Step 2: Verify Installation** ✅
+📊 Summary:
+   Total Models: 1
+   Running: 1
+   Stopped: 0
+
+💡 Commands:
+   polarisllm logs qwen2.5-7b-instruct --follow  # View live logs
+   polarisllm stop qwen2.5-7b-instruct           # Stop a model
+   polarisllm status                              # Detailed status
+```
+
+---
+
+## 🎮 Common Commands
+
+### Deploy Models
 ```bash
-# Check if server is running
-curl http://localhost:7860/health
+# Popular models (shortcuts available)
+polarisllm deploy --model qwen2.5-7b-instruct
+polarisllm deploy --model deepseek-coder-6.7b
+polarisllm deploy --model mistral-7b-instruct
 
-# View available models
-curl http://localhost:7860/v1/models
-
-# Open API documentation
-# Visit: http://localhost:7860/docs
+# Any model with full name
+polarisllm deploy --model my-llama \
+  --model-type llama3_1 \
+  --model-id meta-llama/Meta-Llama-3.1-8B-Instruct
 ```
 
-### **Step 3: Load and Use Models** 🤖
+**Sample deployment output:**
+```
+🚀 Deploying model: deepseek-coder-6.7b
+📋 Using convenience shortcut for deepseek-coder-6.7b
+   Model Type: deepseek
+   Model ID: deepseek-ai/deepseek-coder-6.7b-instruct
+
+📡 Allocated port: 8001
+🚀 Starting deployment in background...
+✅ Model deployed successfully on port 8001!
+```
+
+### Manage Your Models
 ```bash
-# First, load a model using ms-swift (use python -m swift if swift command not in PATH)
-swift deploy --model_type qwen2_5 --model_id Qwen/Qwen2.5-7B-Instruct
-# OR: python -m swift deploy --model_type qwen2_5 --model_id Qwen/Qwen2.5-7B-Instruct
-
-# Then use with OpenAI-compatible API
-curl -X POST "http://localhost:7860/v1/chat/completions" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "qwen2.5-7b-instruct", 
-    "messages": [{"role": "user", "content": "Hello! How are you?"}]
-  }'
+polarisllm list                    # See all models
+polarisllm status                  # System overview
+polarisllm stop qwen2.5-7b-instruct    # Stop a model
+polarisllm undeploy qwen2.5-7b-instruct # Remove completely
 ```
 
-### **Step 4: Use with Your Favorite Tools** 🔧
-```python
-# Works with OpenAI Python client
-import openai
-
-client = openai.OpenAI(
-    base_url="http://localhost:7860/v1",
-    api_key="not-required"  # No API key needed!
-)
-
-response = client.chat.completions.create(
-    model="qwen2.5-7b-instruct",
-    messages=[{"role": "user", "content": "Write a Python function to sort a list"}]
-)
-print(response.choices[0].message.content)
-```
-
-## 🎮 **Real-World Examples**
-
-### **Example 1: Multi-Model AI Assistant**
+**Status output:**
 ```bash
-# Load different specialized models
-polaris load qwen2.5-7b-instruct      # General chat
-polaris load deepseek-coder-6.7b      # Code generation  
-polaris load deepseek-vl-7b-chat      # Vision understanding
+$ polarisllm status
+📊 PolarisLLM System Status
+============================================================
+🖥️  Server Status:
+   Status: 🟢 Running (PID: 12345)
+   Memory: 2.1%
+   CPU: 0.5%
+   API: 🟢 Healthy
+   URL: http://localhost:7860
 
-# Use different models for different tasks
-curl -X POST "http://localhost:7860/v1/chat/completions" \
-  -d '{"model": "deepseek-coder-6.7b", "messages": [{"role": "user", "content": "Write a REST API in FastAPI"}]}'
+🤖 Models Status:
+   Total Models: 2
+   Running: 2 🟢
+   Stopped: 0 🔴
+   Detailed Status:
+     qwen2.5-7b-instruct: 🟢 running
+       Port: 8000, Memory: 15.2%, Uptime: 2.5h
+     deepseek-coder-6.7b: 🟢 running
+       Port: 8001, Memory: 12.8%, Uptime: 1.2h
+
+💾 Resource Status:
+   Ports: 2/100 used (98 available)
+   Range: 8000-8100
+   Total Memory: 28.0% (all models combined)
+
+💡 Quick Commands:
+   polarisllm deploy --model <name>     # Deploy a model
+   polarisllm list                      # List all models
+   polarisllm logs <model> --follow     # View live logs
+   polarisllm stop <model>              # Stop a model
+   polarisllm start --daemon            # Start server in background
 ```
 
-### **Example 2: LangChain Integration**
-```python
-from langchain.llms import OpenAI
-from langchain.chains import LLMChain
-from langchain.prompts import PromptTemplate
-
-# Connect to your local PolarisLLM
-llm = OpenAI(
-    openai_api_base="http://localhost:7860/v1",
-    openai_api_key="not-required",
-    model_name="qwen2.5-7b-instruct"
-)
-
-# Use with LangChain as usual
-prompt = PromptTemplate(template="Explain {topic} in simple terms")
-chain = LLMChain(llm=llm, prompt=prompt)
-result = chain.run(topic="machine learning")
-```
-
-### **Example 3: Batch Processing**
-```python
-import asyncio
-import aiohttp
-
-async def process_documents():
-    models = ["qwen2.5-7b-instruct", "deepseek-coder-6.7b"]
-    
-    for model in models:
-        async with aiohttp.ClientSession() as session:
-            async with session.post(
-                "http://localhost:7860/v1/chat/completions",
-                json={
-                    "model": model,
-                    "messages": [{"role": "user", "content": "Analyze this document..."}]
-                }
-            ) as response:
-                result = await response.json()
-                print(f"{model}: {result}")
-```
-
-## 🛠️ **Available Commands**
-
-### **Server Commands**
+### Watch Logs
 ```bash
-# Start the runtime engine (main command)
-polarisllm
-
-# Alternative start commands
-polaris-llm
-polaris-server
-
-# Start with custom options
-polarisllm --host 0.0.0.0 --port 8080
-
-# View help
-polarisllm --help
+polarisllm logs qwen2.5-7b-instruct --follow    # Live logs
+polarisllm logs --server --follow               # Server logs
 ```
 
-### **Model Management (via ms-swift)**
+**Sample log output:**
+```
+📝 Logs for model: qwen2.5-7b-instruct
+   Lines: 100
+   Follow: Yes
+============================================================
+🔄 Streaming logs (Press Ctrl+C to stop)...
+
+[INFO:swift] Successfully registered model
+[INFO:swift] rank: -1, local_rank: -1, world_size: 1
+[INFO:swift] Loading the model using model_dir: /cache/Qwen2___5-7B-Instruct
+[INFO:swift] Loading model weights...
+[INFO:swift] Model loaded successfully
+[INFO:swift] Server started on http://0.0.0.0:8000
+[INFO:swift] Waiting for requests...
+```
+
+### Server Control
 ```bash
-# List available models
-swift list-models
-# OR: python -m swift list-models
-
-# Deploy a chat model
-swift deploy --model_type qwen2_5 --model_id Qwen/Qwen2.5-7B-Instruct
-# OR: python -m swift deploy --model_type qwen2_5 --model_id Qwen/Qwen2.5-7B-Instruct
-
-# Deploy a vision model  
-swift deploy --model_type deepseek_vl --model_id deepseek-ai/deepseek-vl-7b-chat
-
-# Deploy a code model
-swift deploy --model_type deepseek --model_id deepseek-ai/deepseek-coder-6.7b-instruct
-
-# Check deployment status
-swift list
-# OR: python -m swift list
+polarisllm start --daemon     # Start in background
+polarisllm stop --server      # Stop server
+polarisllm restart           # Restart everything
 ```
 
-## 🤖 **Supported Models (300+)**
+---
 
-PolarisLLM supports the entire ms-swift model ecosystem. Here are some popular choices:
+## 🤖 Available Models
 
-### **🎯 General Chat Models**
-- **Qwen2.5-7B-Instruct**: Alibaba's flagship model - excellent for general tasks
-- **Llama-3.1-8B-Instruct**: Meta's latest - great reasoning capabilities  
-- **Mistral-7B-Instruct**: Efficient and fast - perfect for production
-- **DeepSeek-V2.5**: Advanced reasoning and long context support
+**Popular Shortcuts:**
+- `qwen2.5-7b-instruct` - Great all-around chat model
+- `qwen2.5-14b-instruct` - Larger version for better responses
+- `deepseek-coder-6.7b` - Excellent for programming
+- `deepseek-vl-7b-chat` - Understands images and text
+- `mistral-7b-instruct` - Fast and efficient
+- `llama3.1-8b-instruct` - Meta's latest model
 
-### **💻 Code Generation Models** 
-- **DeepSeek-Coder-6.7B**: State-of-the-art code generation
-- **CodeQwen1.5-7B**: Multi-language programming support
-- **Qwen2.5-Coder-7B**: Latest coding model with enhanced capabilities
+**Categories:**
+- **Chat**: General conversation and Q&A
+- **Code**: Programming and development help  
+- **Vision**: Image understanding and analysis
+- **Audio**: Speech and sound processing
 
-### **👁️ Vision-Language Models**
-- **DeepSeek-VL-7B-Chat**: Advanced vision understanding
-- **Qwen2-VL-7B-Instruct**: Multi-modal reasoning 
-- **LLaVA-NeXT**: Image analysis and description
+*See all 300+ models: `python -m swift list-models`*
 
-### **🎵 Multi-Modal Models**
-- **Qwen2-Audio**: Speech and audio understanding
-- **Qwen2.5-Omni**: Text, image, and audio in one model
+---
 
-*See the complete list of 300+ supported models in our [Model Catalog](https://github.com/polarisllm/models)*
+## 🔌 Use with Your Code
 
-## 🔧 Configuration
-
-### Runtime Configuration (`config/runtime.yaml`)
-
-```yaml
-host: "0.0.0.0"
-port_range_start: 8000
-port_range_end: 8100
-max_concurrent_models: 5
-model_timeout: 300
-env_vars:
-  CUDA_VISIBLE_DEVICES: "0"
-  HF_HUB_CACHE: "./cache/huggingface"
-```
-
-### Model Configuration (`config/models/*.yaml`)
-
-```yaml
-name: "custom-model"
-model_id: "path/to/model"
-model_type: "qwen2_5"
-template: "qwen2_5"
-description: "Custom model description"
-tags: ["chat", "custom"]
-swift_args:
-  max_length: 8192
-  temperature: 0.7
-```
-
-## 🌐 API Endpoints
-
-### OpenAI Compatible Endpoints
-
-- `POST /v1/chat/completions` - Create chat completion
-- `GET /v1/models` - List available models
-
-### Admin Endpoints
-
-- `POST /admin/models/load` - Load a model
-- `POST /admin/models/{model_name}/unload` - Unload a model
-- `GET /admin/models/{model_name}/status` - Get model status
-- `GET /admin/status` - Get runtime status
-- `GET /admin/models/available` - List available model configurations
-- `GET /admin/models/running` - List running models
-
-### Utility Endpoints
-
-- `GET /health` - Health check
-- `GET /` - API information
-
-## 🐳 Docker Deployment
-
-### Basic Deployment
-
-```bash
-docker-compose up -d
-```
-
-### With GPU Support
-
-1. Install nvidia-docker2
-2. Uncomment GPU section in docker-compose.yml
-3. Start with GPU access:
-
-```bash
-docker-compose up -d
-```
-
-### With Redis Cache
-
-```bash
-docker-compose --profile with-cache up -d
-```
-
-## 📊 Monitoring
-
-### Health Checks
-
-The runtime includes built-in health monitoring:
-
-```bash
-curl http://localhost:7860/health
-```
-
-### Resource Monitoring
-
-View real-time resource usage:
-
-```bash
-python cli.py status
-```
-
-### Logs
-
-```bash
-# Local logs
-tail -f polaris.log
-
-# Docker logs
-docker-compose logs -f polaris-runtime
-```
-
-## 🔌 Integration Examples
-
-### Python Client
-
+### Python
 ```python
 import openai
 
@@ -367,17 +233,36 @@ client = openai.OpenAI(
 )
 
 response = client.chat.completions.create(
-    model="deepseek-vl-7b-chat",
-    messages=[
-        {"role": "user", "content": "Hello!"}
-    ]
+    model="qwen2.5-7b-instruct",
+    messages=[{"role": "user", "content": "Hello!"}]
 )
-
 print(response.choices[0].message.content)
 ```
 
-### JavaScript Client
+**Sample response:**
+```json
+{
+  "id": "chatcmpl-123",
+  "object": "chat.completion",
+  "created": 1677652288,
+  "model": "qwen2.5-7b-instruct",
+  "choices": [{
+    "index": 0,
+    "message": {
+      "role": "assistant",
+      "content": "Hello! I'm an AI assistant powered by PolarisLLM. How can I help you today?"
+    },
+    "finish_reason": "stop"
+  }],
+  "usage": {
+    "prompt_tokens": 9,
+    "completion_tokens": 20,
+    "total_tokens": 29
+  }
+}
+```
 
+### JavaScript
 ```javascript
 import OpenAI from 'openai';
 
@@ -388,105 +273,126 @@ const client = new OpenAI({
 
 const completion = await client.chat.completions.create({
     model: 'qwen2.5-7b-instruct',
-    messages: [
-        { role: 'user', content: 'Hello!' }
-    ]
+    messages: [{ role: 'user', content: 'Hello!' }]
 });
-
-console.log(completion.choices[0].message.content);
 ```
 
-## 🛡️ Production Considerations
-
-1. **Resource Management**: Monitor GPU/CPU usage and memory consumption
-2. **Load Balancing**: Use reverse proxy for multiple runtime instances
-3. **Security**: Add authentication for admin endpoints
-4. **Logging**: Configure structured logging for production monitoring
-5. **Scaling**: Use Kubernetes for large-scale deployments
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## 📝 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🌟 **Use Cases**
-
-### **🏢 Enterprise & Startups**
-- **Private AI Infrastructure**: Keep models in-house for data privacy
-- **Cost Optimization**: Reduce API costs by 90% compared to cloud providers
-- **Multi-tenant Applications**: Serve different models to different customers
-- **A/B Testing**: Compare model performance with easy switching
-
-### **👨‍💻 Developers & Researchers**
-- **Local Development**: Test AI features without API costs
-- **Model Comparison**: Evaluate different models on the same dataset
-- **Fine-tuning Pipeline**: Deploy custom fine-tuned models
-- **Prototype Rapidly**: Build AI applications with zero setup friction
-
-### **📚 Educational & Training**
-- **AI Courses**: Provide students with hands-on LLM experience
-- **Research Projects**: Access to latest models for academic research
-- **Hackathons**: Quick setup for AI-focused competitions
-
-## 🏆 **Why Choose PolarisLLM Over Alternatives?**
-
-| Feature | PolarisLLM | Ollama | text-generation-webui | OpenAI API |
-|---------|------------|---------|----------------------|------------|
-| **Multi-model serving** | ✅ Concurrent | ⚠️ Sequential | ❌ Single | ✅ Multiple |
-| **OpenAI compatibility** | ✅ Full | ❌ Limited | ❌ None | ✅ Native |
-| **Model variety** | ✅ 300+ models | ⚠️ GGUF only | ⚠️ Limited | ⚠️ Proprietary |
-| **Production ready** | ✅ Yes | ⚠️ Basic | ❌ No | ✅ Yes |
-| **Self-hosted** | ✅ Yes | ✅ Yes | ✅ Yes | ❌ No |
-| **Cost** | ✅ Free | ✅ Free | ✅ Free | 💰 Expensive |
-| **Setup time** | ✅ < 2 minutes | ⚠️ 5-10 min | ❌ 30+ min | ✅ Instant |
-
-## 🤝 **Community & Support**
-
-### **Getting Help**
-- 📖 **Documentation**: Comprehensive guides and API reference
-- 💬 **GitHub Discussions**: Community Q&A and feature requests  
-- 🐛 **Issue Tracking**: Bug reports and feature requests
-- 📧 **Email Support**: contact@polarisllm.dev
-
-### **Contributing**
-- 🍴 **Fork & PR**: Contributions welcome!
-- 🧪 **Testing**: Help test new models and features
-- 📝 **Documentation**: Improve guides and examples
-- 🌍 **Translation**: Help localize for global users
-
-### **Stay Updated**
-- ⭐ **Star us on GitHub**: Get notifications for releases
-- 🐦 **Follow @PolarisLLM**: Latest updates and tips
-- 📰 **Newsletter**: Monthly model updates and tutorials
-
-## 🔄 Architecture
-
-```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   CLI Client    │    │   FastAPI Server │    │  Runtime Core   │
-│                 │────│                  │────│                 │
-│ - Model Mgmt    │    │ - OpenAI API     │    │ - Model Manager │
-│ - Status Check  │    │ - Admin API      │    │ - Process Mgmt  │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-                                │                        │
-                                │                        │
-                       ┌────────▼────────┐    ┌─────────▼─────────┐
-                       │  Model Instance │    │  Model Instance   │
-                       │                 │    │                   │
-                       │ - ms-swift      │    │ - ms-swift        │
-                       │ - Port 8000     │    │ - Port 8001       │
-                       └─────────────────┘    └───────────────────┘
+### cURL
+```bash
+curl -X POST "http://localhost:7860/v1/chat/completions" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "qwen2.5-7b-instruct",
+    "messages": [{"role": "user", "content": "Write a Python function to add two numbers"}]
+  }'
 ```
 
-## 🎉 Acknowledgments
+**Sample cURL response:**
+```json
+{
+  "id": "chatcmpl-456",
+  "object": "chat.completion",
+  "created": 1677652288,
+  "model": "qwen2.5-7b-instruct",
+  "choices": [{
+    "index": 0,
+    "message": {
+      "role": "assistant",
+      "content": "Here's a simple Python function to add two numbers:\n\n```python\ndef add_numbers(a, b):\n    return a + b\n\n# Example usage\nresult = add_numbers(5, 3)\nprint(result)  # Output: 8\n```"
+    },
+    "finish_reason": "stop"
+  }]
+}
+```
 
-- Built on the excellent [ms-swift](https://github.com/modelscope/swift) framework
-- Inspired by OpenAI's API design
-- Thanks to the open-source LLM community
+---
+
+## 📊 See What's Running
+
+```bash
+$ polarisllm list
+📋 Deployed Models
+========================================================================
+NAME                    STATUS      PORT    MEMORY   UPTIME    TYPE
+qwen2.5-7b-instruct     🟢 Running  8000    15.2%    2.5h      qwen2_5
+deepseek-coder-6.7b     🟢 Running  8001    12.8%    1.2h      deepseek
+mistral-7b-instruct     🔴 Stopped  8002    N/A      N/A       mistral
+```
+
+```bash
+$ polarisllm status
+📊 System Status
+===========================================
+🖥️  Server: 🟢 Running at http://localhost:7860
+🤖 Models: 2 running, 1 stopped
+💾 Resources: 2/100 ports used, 28% memory
+```
+
+---
+
+## 🚫 Fix Common Issues
+
+**Model won't start?**
+```bash
+polarisllm logs <model-name>    # Check what went wrong
+polarisllm cleanup              # Clean up any stuck processes
+```
+
+**Sample error log:**
+```
+📝 Logs for model: qwen2.5-7b-instruct
+============================================================
+[ERROR:swift] CUDA out of memory. Tried to allocate 2.0 GiB
+[INFO:swift] Try reducing batch size or using a smaller model
+[ERROR:swift] Model loading failed
+```
+
+**Server not working?**
+```bash
+polarisllm status               # See what's happening
+polarisllm restart              # Restart everything
+```
+
+**Need to free up space?**
+```bash
+polarisllm stop --all           # Stop all models
+polarisllm cleanup              # Clean up old processes
+```
+
+**Sample cleanup output:**
+```
+🧹 Cleaning up PolarisLLM...
+========================================
+🔍 Cleaning up dead processes...
+🔍 Cleaning up dead models...
+🔍 Cleaning up port allocations...
+Cleaned up 2 dead port allocations
+🔍 Cleaning up old logs...
+Cleaned up 3 old log files
+
+✅ Cleanup completed!
+💡 Use 'polarisllm status' to verify system state
+```
+
+---
+
+## 💡 Pro Tips
+
+- Models run in background automatically - they survive terminal restarts
+- Use `--follow` with logs to watch models start up in real-time
+- Each model gets its own port (8000, 8001, 8002...)
+- Server remembers your models even after restarts
+- Use shortcuts for popular models, full names for everything else
+
+---
+
+## 🤝 Need Help?
+
+- **GitHub Issues**: [Report bugs or request features](https://github.com/polarisllm/polarisLLM/issues)
+- **PyPI Package**: [Install from here](https://pypi.org/project/polarisllm/)
+
+---
+
+## 📄 License
+
+MIT License - Free to use for any purpose
