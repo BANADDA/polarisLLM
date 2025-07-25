@@ -4,7 +4,7 @@
 
 Transform your server into a powerful AI platform. Deploy models in the background, manage them with ease, and access everything through OpenAI-compatible APIs.
 
-[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://pypi.org/project/polarisllm/)
+[![Version](https://img.shields.io/badge/version-2.0.5-blue.svg)](https://pypi.org/project/polarisllm/)
 [![Python](https://img.shields.io/badge/python-3.8+-brightgreen.svg)](https://python.org)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 

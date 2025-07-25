@@ -2,11 +2,11 @@
 Model management endpoints (OpenAI compatible)
 """
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, Depends, HTTPException
 
-from ..models import ModelListResponse, ModelInfo
-from ..server import get_runtime
-from ...core.runtime import PolarisRuntime
+from src.api.dependencies import get_runtime
+from src.api.models import ModelInfo, ModelListResponse
+from src.core.runtime import PolarisRuntime
 
 router = APIRouter()
 

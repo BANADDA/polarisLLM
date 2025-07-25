@@ -4,40 +4,43 @@ Chat completion endpoints (OpenAI compatible)
 
 import asyncio
 import json
-import uuid
 import time
+import uuid
 from typing import AsyncGenerator
 
-from fastapi import APIRouter, HTTPException, Depends
-from fastapi.responses import StreamingResponse
 import aiohttp
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import StreamingResponse
 
-from ..models import ChatCompletionRequest, ChatCompletionResponse, ChatCompletionChunk
-from ..models import ChatCompletionChoice, ChatMessage, ChatCompletionUsage
-from ..models import ChatCompletionChunkChoice, ErrorResponse
-from ..server import get_runtime
-from ...core.runtime import PolarisRuntime
+from polarisllm.core import ModelRegistry
+from src.api.dependencies import get_model_registry
+from src.api.models import (ChatCompletionChoice, ChatCompletionChunk,
+                            ChatCompletionChunkChoice, ChatCompletionRequest,
+                            ChatCompletionResponse, ChatCompletionUsage,
+                            ChatMessage, ErrorResponse)
 
 router = APIRouter()
 
 @router.post("/chat/completions")
 async def chat_completions(
     request: ChatCompletionRequest,
-    runtime: PolarisRuntime = Depends(get_runtime)
+    registry: ModelRegistry = Depends(get_model_registry)
 ):
     """Create a chat completion (OpenAI compatible)"""
     
-    # Check if model is running
-    model_status = await runtime.get_model_status(request.model)
-    if not model_status or model_status.status != 'running':
+    # Check if model is running using the CLI's registry system
+    model_info = registry.get_model_info(request.model)
+    if not model_info or model_info.status != 'running':
         raise HTTPException(
             status_code=404,
             detail=f"Model {request.model} is not running. Please load it first."
         )
     
     # Prepare request for ms-swift backend
+    # Strip HuggingFace prefix (e.g., "Qwen/Qwen2.5-7B-Instruct" -> "Qwen2.5-7B-Instruct")
+    swift_model_id = model_info.model_id.split('/')[-1] if '/' in model_info.model_id else model_info.model_id
     swift_request = {
-        "model": model_status.model_id,
+        "model": swift_model_id,  # Use the model ID that ms-swift actually recognizes
         "messages": [msg.dict() for msg in request.messages],
         "temperature": request.temperature,
         "max_tokens": request.max_tokens,
@@ -48,11 +51,11 @@ async def chat_completions(
     
     if request.stream:
         return StreamingResponse(
-            _stream_chat_completion(swift_request, model_status.port, request.model),
+            _stream_chat_completion(swift_request, model_info.port, request.model),
             media_type="text/plain"
         )
     else:
-        return await _non_stream_chat_completion(swift_request, model_status.port, request.model)
+        return await _non_stream_chat_completion(swift_request, model_info.port, request.model)
 
 async def _non_stream_chat_completion(swift_request: dict, port: int, model_name: str):
     """Handle non-streaming chat completion"""

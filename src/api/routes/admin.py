@@ -3,15 +3,15 @@ Admin endpoints for runtime management
 """
 
 from typing import List
-from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
 
-from ..models import (
-    LoadModelRequest, LoadModelResponse, ModelStatusResponse,
-    RuntimeStatusResponse, AddModelConfigRequest
-)
-from ..server import get_runtime
-from ...core.runtime import PolarisRuntime
-from ...core.config import ModelConfig
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
+
+from src.api.dependencies import get_runtime
+from src.api.models import (AddModelConfigRequest, LoadModelRequest,
+                            LoadModelResponse, ModelStatusResponse,
+                            RuntimeStatusResponse)
+from src.core.config import ModelConfig
+from src.core.runtime import PolarisRuntime
 
 router = APIRouter()
 

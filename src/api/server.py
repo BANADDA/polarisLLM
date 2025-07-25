@@ -5,36 +5,48 @@ FastAPI Server for PolarisLLM Runtime Engine
 import asyncio
 import logging
 from contextlib import asynccontextmanager
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List, Optional
 
-from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends
+import uvicorn
+from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
-import uvicorn
 
-from ..core.runtime import PolarisRuntime
-from .models import *
-from .routes import chat, models, admin
+# Import CLI's orchestration system
+from polarisllm.core import ModelRegistry, PolarisConfig
+from src.api.dependencies import set_orchestration_components
+from src.api.models import *
+from src.api.routes import admin, chat, models
 
-# Global runtime instance
-runtime: Optional[PolarisRuntime] = None
+# Global orchestration components
+config: Optional[PolarisConfig] = None
+registry: Optional[ModelRegistry] = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan manager"""
-    global runtime
+    global config, registry
     
     # Startup
-    logging.info("Starting PolarisLLM Runtime Engine")
-    runtime = PolarisRuntime()
-    await runtime.start()
+    logging.info("Starting PolarisLLM Runtime Engine with CLI orchestration")
+    
+    # Initialize the same components as CLI
+    config = PolarisConfig()
+    registry = ModelRegistry(config)
+    
+    # Load existing model registry
+    registry.load_registry()
+    
+    # Set components in dependencies module
+    set_orchestration_components(config, registry)
+    
+    logging.info("PolarisLLM server ready with CLI orchestration system")
     
     yield
     
     # Shutdown  
     logging.info("Shutting down PolarisLLM Runtime Engine")
-    if runtime:
-        await runtime.stop()
+    # Components will be cleaned up automatically
 
 def create_app() -> FastAPI:
     """Create FastAPI application"""
@@ -65,8 +77,8 @@ def create_app() -> FastAPI:
         """Health check endpoint"""
         return {
             "status": "healthy",
-            "runtime": "running" if runtime else "stopped",
-            "models": len(runtime.running_models) if runtime else 0
+            "runtime": "running" if registry else "stopped",
+            "models": len([m for m in registry.list_models() if m.status == 'running']) if registry else 0
         }
     
     @app.get("/")
@@ -87,11 +99,7 @@ def create_app() -> FastAPI:
     
     return app
 
-def get_runtime() -> PolarisRuntime:
-    """Get the global runtime instance"""
-    if runtime is None:
-        raise HTTPException(status_code=503, detail="Runtime not initialized")
-    return runtime
+
 
 async def run_server(
     host: str = "0.0.0.0",

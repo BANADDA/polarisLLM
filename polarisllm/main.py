@@ -160,7 +160,7 @@ async def start_fastapi_server(host: str, port: int, log_level: str):
     """Start the FastAPI server (internal function)"""
     import uvicorn
 
-    from ..src.api.server import create_app
+    from src.api.server import create_app
 
     # Create FastAPI app
     app = create_app()
